@@ -1,10 +1,15 @@
+require('dotenv').config();
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const mongoose = require('mongoose'); // Import Mongoose
 const connectDB = require('./config/db');
 
 // Load environment variables
 dotenv.config();
+
+// Suppress Mongoose deprecation warning
+mongoose.set('strictQuery', false);
 
 // Initialize Express app
 const app = express();
