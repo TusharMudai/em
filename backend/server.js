@@ -1,26 +1,30 @@
-
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 
+// Load environment variables
 dotenv.config();
 
-
+// Initialize Express app
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/api/auth', require('./routes/authRoutes'));
-//app.use('/api/tasks', require('./routes/taskRoutes'));
+
+// Routes
+app.use('/api/auth', require('./routes/authRoutes')); // Authentication routes
+app.use('/api/employees', require('./routes/employeeRoutes')); // Employee management routes
 
 // Export the app object for testing
 if (require.main === module) {
-    connectDB();
-    // If the file is run directly, start the server
-    const PORT = process.env.PORT || 5001;
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  }
+  // Connect to MongoDB
+  connectDB();
 
+  // Start the server
+  const PORT = process.env.PORT || 5001;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
 
-module.exports = app
+module.exports = app;

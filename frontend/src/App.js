@@ -1,21 +1,27 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Profile from './pages/Profile';
-import Tasks from './pages/Tasks';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import EmployeeForm from './components/EmployeeForm';
+import EmployeeList from './components/EmployeeList';
+import './App.css';
 
 function App() {
+  const [employees, setEmployees] = useState([]);
+
+  const fetchEmployees = async () => {
+    const response = await axios.get('/api/employees');
+    setEmployees(response.data);
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/tasks" element={<Tasks />} />
-      </Routes>
-    </Router>
+    <div className="App">
+      <h1>Employee Management System</h1>
+      <EmployeeForm fetchEmployees={fetchEmployees} />
+      <EmployeeList employees={employees} fetchEmployees={fetchEmployees} />
+    </div>
   );
 }
 
