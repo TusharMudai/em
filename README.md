@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # **Assignment: Full-Stack CRUD Application Development with DevOps Practices**
 
 ## **Objective**
@@ -66,3 +67,6 @@ Select a meaningful use case for your CRUD operations. We will provide the list,
 
   * Project setup instructions.
   * CI/CD pipeline details.
+=======
+# em
+>>>>>>> origin/main
