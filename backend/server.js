@@ -3,7 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const mongoose = require('mongoose'); // Import Mongoose
-const connectDB = require('./config/db');
+const connectDB = require('./config/db'); // Import the connectDB function
 
 // Load environment variables
 dotenv.config();
