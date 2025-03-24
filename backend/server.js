@@ -8,7 +8,13 @@ const connectDB = require('./config/db');
 const app = express();
 
 // ======================
-//  Enhanced Middleware
+// Mongoose Configuration
+// ======================
+// Suppress the `strictQuery` deprecation warning
+mongoose.set('strictQuery', true);
+
+// ======================
+// Enhanced Middleware
 // ======================
 app.use(cors({
   origin: '*' // Allow all origins (tighten this for production)
@@ -17,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ==============
-//  Routes
+// Routes
 // ==============
 // Health Check Endpoint
 app.get('/', (req, res) => {
@@ -33,7 +39,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/employees', require('./routes/employeeRoutes'));
 
 // ======================
-//  Error Handling
+// Error Handling
 // ======================
 // 404 Handler
 app.use((req, res) => {
@@ -53,7 +59,7 @@ app.use((err, req, res, next) => {
 });
 
 // ======================
-//  Server Initialization
+// Server Initialization
 // ======================
 const startServer = async () => {
   try {
