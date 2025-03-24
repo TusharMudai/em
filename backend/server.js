@@ -1,13 +1,8 @@
-require('dotenv').config(); // Load environment variables
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose'); // Import Mongoose
-const connectDB = require('./config/db'); // Import the connectDB function
+const connectDB = require('./config/db');
 
-// Suppress Mongoose deprecation warning
-mongoose.set('strictQuery', false);
-
-// Initialize Express app
 const app = express();
 
 // Middleware
@@ -15,25 +10,31 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', require('./routes/authRoutes')); // Authentication routes
-app.use('/api/employees', require('./routes/employeeRoutes')); // Employee management routes
+app.get('/', (req, res) => {
+  res.send('Backend Server is Running!');
+});
 
-// Connect to MongoDB and start the server
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/employees', require('./routes/employeeRoutes'));
+
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Start Server
 if (require.main === module) {
-  // Connect to MongoDB
   connectDB()
     .then(() => {
-      console.log('MongoDB connected successfully');
-
-      // Start the server
       const PORT = process.env.PORT || 5001;
-      app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+      app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Server running on http://0.0.0.0:${PORT}`);
+      });
     })
-    .catch((err) => {
-      console.error('MongoDB connection error:', err);
-      process.exit(1); // Exit the process if the connection fails
+    .catch(err => {
+      console.error('MongoDB connection failed:', err);
+      process.exit(1);
     });
 }
 
-// Export the app object for testing
 module.exports = app;
