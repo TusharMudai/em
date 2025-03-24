@@ -1,12 +1,8 @@
-require('dotenv').config();
+require('dotenv').config(); // Load environment variables
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
 const mongoose = require('mongoose'); // Import Mongoose
 const connectDB = require('./config/db'); // Import the connectDB function
-
-// Load environment variables
-dotenv.config();
 
 // Suppress Mongoose deprecation warning
 mongoose.set('strictQuery', false);
@@ -22,14 +18,22 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/authRoutes')); // Authentication routes
 app.use('/api/employees', require('./routes/employeeRoutes')); // Employee management routes
 
-// Export the app object for testing
+// Connect to MongoDB and start the server
 if (require.main === module) {
   // Connect to MongoDB
-  connectDB();
+  connectDB()
+    .then(() => {
+      console.log('MongoDB connected successfully');
 
-  // Start the server
-  const PORT = process.env.PORT || 5001;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+      // Start the server
+      const PORT = process.env.PORT || 5001;
+      app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    })
+    .catch((err) => {
+      console.error('MongoDB connection error:', err);
+      process.exit(1); // Exit the process if the connection fails
+    });
 }
 
+// Export the app object for testing
 module.exports = app;
