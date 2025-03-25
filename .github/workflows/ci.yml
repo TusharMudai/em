@@ -1,28 +1,60 @@
-name: CI
+name: Deploy Employee Management App
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+  push:
+    branches:
+      - main  # Trigger pipeline when changes are pushed to the main branch
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-        steps:
-        - name: Checkout code
-            uses: actions/checkout@v2
+    steps:
+    # 1. Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-        - name: Set up Node.js
-            uses: actions/setup-node@v2
-            with:
-                node-version: '14'
+    # 2. Set up Node.js environment
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Use the version your project requires
 
-        - name: Install dependencies
-            run: npm install
+    # 3. Install dependencies
+    - name: Install dependencies
+      run: |
+        npm install --prefix backend
+        npm install --prefix frontend
 
-        - name: Run tests
-            run: npm test
+    # 4. Build the React app
+    - name: Build React app
+      run: npm run build --prefix frontend
+
+    # 5. Securely configure environment variables
+    - name: Configure Environment Variables
+      env:
+        MONGO_URI: ${{ secrets.MONGO_URI }}  # MongoDB Atlas URI
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}  # JWT secret for auth
+        PORT: ${{ secrets.PORT }}
+      run: echo "Environment variables set"
+
+    # 6. Deploy to EC2
+    - name: Deploy to EC2
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Add your EC2 private key as a GitHub secret
+      run: |
+        ssh -i /path/to/private/key.pem ubuntu@3.27.2.82 "bash -s" <<EOF
+        # Pull latest code
+        cd ~/employee-management/
+        git pull origin main
+
+        # Install backend dependencies
+        npm install --prefix backend
+
+        # Restart backend with PM2
+        pm2 restart backend || pm2 start backend/server.js --name backend
+
+        # Deploy frontend
+        rm -rf /var/www/html/*
+        cp -r frontend/build/* /var/www/html/
+        EOF

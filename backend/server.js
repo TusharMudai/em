@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); // Load environment variables from .env file
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -10,14 +10,13 @@ const app = express();
 // ======================
 // Mongoose Configuration
 // ======================
-// Suppress the `strictQuery` deprecation warning
-mongoose.set('strictQuery', true);
+mongoose.set('strictQuery', true); // Suppress strictQuery warning
 
 // ======================
-// Enhanced Middleware
+// Middleware Setup
 // ======================
 app.use(cors({
-  origin: '*' // Allow all origins (tighten this for production)
+  origin: '*' // Allow all origins (update this for production security)
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -25,7 +24,6 @@ app.use(express.urlencoded({ extended: true }));
 // ==============
 // Routes
 // ==============
-// Health Check Endpoint
 app.get('/', (req, res) => {
   res.status(200).json({
     status: 'active',
@@ -41,7 +39,6 @@ app.use('/api/employees', require('./routes/employeeRoutes'));
 // ======================
 // Error Handling
 // ======================
-// 404 Handler
 app.use((req, res) => {
   res.status(404).json({ 
     error: 'Route not found',
@@ -49,7 +46,6 @@ app.use((req, res) => {
   });
 });
 
-// Global Error Handler
 app.use((err, req, res, next) => {
   console.error('Server Error:', err.stack);
   res.status(500).json({
@@ -59,16 +55,25 @@ app.use((err, req, res, next) => {
 });
 
 // ======================
-// Server Initialization
+// MongoDB Connection & Server Initialization
 // ======================
 const startServer = async () => {
   try {
-    // Connect to MongoDB
-    await connectDB();
+    // Load environment variables
+    const mongoURI = process.env.MONGO_URI; // MongoDB Atlas URI from secrets
+    const jwtSecret = process.env.JWT_SECRET; // JWT secret from secrets
+    const PORT = process.env.PORT || 5001; // Port from secrets or default to 5001
+
+    // Validate required environment variables
+    if (!mongoURI || !jwtSecret) {
+      throw new Error('Missing required environment variables: MONGO_URI or JWT_SECRET');
+    }
+
+    // Connect to MongoDB Atlas
+    await connectDB(mongoURI);
     console.log('✅ MongoDB connected successfully');
 
     // Start Express server
-    const PORT = process.env.PORT || 5001;
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on:`);
       console.log(`   Local: http://localhost:${PORT}`);
