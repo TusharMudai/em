@@ -4,23 +4,22 @@ const userSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Please add a name']
+      required: [true, 'Please provide a name']
     },
     email: {
       type: String,
-      required: [true, 'Please add an email'],
-      unique: true,
-      trim: true,
-      match: [
-        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        'Please add a valid email'
-      ]
+      required: [true, 'Please provide an email'],
+      unique: true
     },
     password: {
       type: String,
-      required: [true, 'Please add a password'],
-      minlength: [6, 'Password must be at least 6 characters']
-    }
+      required: [true, 'Please provide a password']
+    },
+    // Make these optional
+    position: String,
+    department: String,
+    salary: Number,
+    joiningDate: Date
   },
   {
     timestamps: true
