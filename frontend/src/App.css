@@ -4,49 +4,54 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #f5f5f5; /* Lighter background for better contrast */
   min-height: 100vh;
+  box-sizing: border-box; /* Consistent box sizing */
 }
 
 h1 {
   text-align: center;
-  color: #333;
+  color: #2c3e50; /* Softer dark color for text */
   margin-bottom: 20px;
   font-size: 2.5rem;
+  line-height: 1.2;
 }
 
 /* Form Styles */
 form {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  background: #ffffff;
+  padding: 25px; /* Slightly increased padding for better spacing */
+  border-radius: 10px; /* Smoother, more modern corner radius */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow for depth */
+  margin-bottom: 30px;
 }
 
 form input {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 12px; /* More comfortable padding */
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px; /* Smoother corners */
   font-size: 16px;
 }
 
 form input:focus {
   border-color: #28a745;
+  background-color: #f8fff8; /* Slight highlight for focus */
   outline: none;
 }
 
 form button {
   width: 100%;
-  padding: 10px;
+  padding: 12px; /* Improved spacing for larger buttons */
   background-color: #28a745;
-  color: white;
+  color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px; /* Consistent corner rounding */
   font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
 form button:hover {
@@ -55,21 +60,23 @@ form button:hover {
 
 /* Employee List Styles */
 .employee-list {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .employee-list h2 {
   margin-bottom: 20px;
   font-size: 1.8rem;
-  color: #333;
+  color: #2c3e50;
+  font-weight: 600; /* Slightly bolder text for emphasis */
 }
 
 ul {
   list-style-type: none;
   padding: 0;
+  margin: 0;
 }
 
 li {
@@ -78,23 +85,26 @@ li {
   align-items: center;
   padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 8px;
   margin-bottom: 10px;
   background-color: #f9f9f9;
+  transition: background-color 0.3s ease; /* Smooth hover transition */
 }
 
 li:hover {
-  background-color: #f1f1f1;
+  background-color: #f0f8f0; /* Subtle hover effect */
 }
 
 li button {
-  padding: 5px 10px;
+  padding: 6px 12px;
   background-color: #dc3545;
-  color: white;
+  color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
 li button:hover {
@@ -104,7 +114,7 @@ li button:hover {
 /* Responsive Design */
 @media (max-width: 768px) {
   .App {
-    padding: 10px;
+    padding: 15px;
   }
 
   h1 {
@@ -112,6 +122,15 @@ li button:hover {
   }
 
   form, .employee-list {
-    padding: 15px;
+    padding: 20px; /* Maintain comfortable spacing */
+  }
+
+  li {
+    flex-direction: column; /* Stack items for smaller screens */
+    align-items: flex-start;
+  }
+
+  li button {
+    align-self: flex-end; /* Align button to the right for better structure */
   }
 }
