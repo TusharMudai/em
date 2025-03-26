@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axiosInstance from '../axiosConfig'; // Use your centralized axios instance
+import axiosInstance from '../api/axiosConfig'; // Use your centralized axios instance
 
 const EmployeeForm = ({ fetchEmployees, onSuccess }) => {
   const [formData, setFormData] = useState({

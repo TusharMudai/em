@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axiosInstance from '../axiosConfig'; // Use your centralized axios config
+import axiosInstance from '../api/axiosConfig'; // Use your centralized axios config
 
 const EmployeeList = ({ employees, fetchEmployees }) => {
   const [deletingId, setDeletingId] = useState(null);
