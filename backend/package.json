@@ -8,11 +8,12 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "prod": "node server.js",
-  "stop": "pkill node"
+    "stop": "pkill node"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
     "bcryptjs": "^3.0.2",
+    "body-parser": "^1.20.3",
     "chai": "^4.5.0",
     "chai-http": "^4.3.0",
     "cors": "^2.8.5",
@@ -32,4 +33,3 @@
   "author": "Task Manager Team",
   "license": "ISC"
 }
-
