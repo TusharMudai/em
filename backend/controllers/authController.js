@@ -42,13 +42,13 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
-    if (user && await bcrypt.compare(password, user.password)) {
+    const existingUser = await User.findOne({ email }); // Renamed variable
+    if (existingUser && await bcrypt.compare(password, existingUser.password)) {
       res.json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        token: generateToken(user._id),
+        _id: existingUser.id,
+        name: existingUser.name,
+        email: existingUser.email,
+        token: generateToken(existingUser._id),
       });
     } else {
       res.status(401).json({ message: 'Invalid credentials' });
