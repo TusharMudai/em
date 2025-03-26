@@ -16,15 +16,22 @@ const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt(10));
-    const createdUser = await User.create({ name, email, password: hashedPassword, position, department, salary, joiningDate: joiningDate ? new Date(joiningDate) : undefined });
-
-    res.status(201).json({
-      _id: user.id,
-      name: user.name,
-      email: user.email,
-      token: generateToken(user._id),
+    const createdUser = await User.create({ 
+      name, 
+      email, 
+      password: hashedPassword, 
+      position, 
+      department, 
+      salary, 
+      joiningDate: joiningDate ? new Date(joiningDate) : undefined 
     });
 
+    res.status(201).json({
+      _id: createdUser.id,
+      name: createdUser.name,
+      email: createdUser.email,
+      token: generateToken(createdUser._id),
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error during registration', error: error.message });
   }
