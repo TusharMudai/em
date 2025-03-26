@@ -1,60 +1,72 @@
-name: Deploy Employee Management App
+name: Backend CI
 
 on:
   push:
     branches:
-      - main  # Trigger pipeline when changes are pushed to the main branch
+      - main  # Trigger CI on pushes to the main branch
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    name: Run Tests
+    runs-on: self-hosted  # Ensure runner label matches your setup
+
+    strategy:
+      matrix:
+        node-version: [22]
 
     steps:
-    # 1. Checkout the code
-    - name: Checkout code
+    # Checkout code
+    - name: Checkout Code
       uses: actions/checkout@v3
 
-    # 2. Set up Node.js environment
-    - name: Set up Node.js
+    # Set up Node.js
+    - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # Use the version your project requires
+        node-version: ${{ matrix.node-version }}
 
-    # 3. Install dependencies
-    - name: Install dependencies
-      run: |
-        npm install --prefix backend
-        npm install --prefix frontend
-
-    # 4. Build the React app
-    - name: Build React app
-      run: npm run build --prefix frontend
-
-    # 5. Securely configure environment variables
-    - name: Configure Environment Variables
+    # Print secrets for debugging
+    - name: Print Env Secret
       env:
-        MONGO_URI: ${{ secrets.MONGO_URI }}  # MongoDB Atlas URI
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}  # JWT secret for auth
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
         PORT: ${{ secrets.PORT }}
-      run: echo "Environment variables set"
+      run: | 
+        echo "Secret 1 is: $MONGO_URI"
+        echo "Secret 2 is: $JWT_SECRET"
+        echo "Secret 3 is: $PORT"
 
-    # 6. Deploy to EC2
-    - name: Deploy to EC2
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Add your EC2 private key as a GitHub secret
+    # Install backend dependencies
+    - name: Install Backend Dependencies
+      working-directory: ./backend
       run: |
-        ssh -i /path/to/private/key.pem ubuntu@3.27.2.82 "bash -s" <<EOF
-        # Pull latest code
-        cd ~/employee-management/
-        git pull origin main
+        npm install --global yarn
+        yarn install
 
-        # Install backend dependencies
-        npm install --prefix backend
+    # Create .env file in backend
+    - name: Setup Backend Environment
+      working-directory: ./backend
+      run: |
+        touch .env
+        echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+        echo "PORT=${{ secrets.PORT }}" >> .env
 
-        # Restart backend with PM2
-        pm2 restart backend || pm2 start backend/server.js --name backend
+    # Run backend tests
+    - name: Run Backend Tests
+      working-directory: ./backend
+      run: yarn test
 
-        # Deploy frontend
-        rm -rf /var/www/html/*
-        cp -r frontend/build/* /var/www/html/
-        EOF
+    # Install frontend dependencies and build
+    - name: Install Frontend Dependencies
+      working-directory: ./frontend
+      run: |
+        yarn install
+        yarn build
+
+    # Manage PM2 services
+    - name: Restart PM2 Services
+      run: |
+        pm2 stop all
+        pm2 start all
+        pm2 restart all
