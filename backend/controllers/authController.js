@@ -16,7 +16,7 @@ const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt(10));
-    const user = await User.create({ name, email, password: hashedPassword, position, department, salary, joiningDate: joiningDate ? new Date(joiningDate) : undefined });
+    const createdUser = await User.create({ name, email, password: hashedPassword, position, department, salary, joiningDate: joiningDate ? new Date(joiningDate) : undefined });
 
     res.status(201).json({
       _id: user.id,
