@@ -6,6 +6,7 @@ import EmployeeForm from './components/EmployeeForm';
 import EmployeeList from './components/EmployeeList';
 import Login from './pages/Login';
 import Register from './pages/Register';
+console.log(require.resolve('./components/ProtectedRoute.jsx'));  // Checks if Webpack can find the file
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
