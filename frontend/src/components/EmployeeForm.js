@@ -3,6 +3,7 @@ import axiosInstance from '../api/axiosConfig';
 import { validateEmail, formatDateForInput } from '../utils/helpers';
 
 const EmployeeForm = ({ fetchEmployees, onSuccess }) => {
+  const [setIsSubmitting] = useState(false);  // Add this line
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,14 +16,6 @@ const EmployeeForm = ({ fetchEmployees, onSuccess }) => {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
 
-  const departments = [<select>
-    'Engineering',
-    'Marketing',
-    'HR',
-    'Finance',
-    'Operations'
-    </select>
-  ];
 
   const validateField = (name, value) => {
     switch (name) {
