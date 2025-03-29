@@ -13,15 +13,15 @@ const EmployeeForm = ({ fetchEmployees, onSuccess }) => {
   });
 
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
-  const departments = [
+  const departments = [<select>
     'Engineering',
     'Marketing',
     'HR',
     'Finance',
     'Operations'
+    </select>
   ];
 
   const validateField = (name, value) => {
@@ -51,21 +51,6 @@ const EmployeeForm = ({ fetchEmployees, onSuccess }) => {
     });
     setErrors(newErrors);
     return Object.values(newErrors).every(error => !error);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'salary' ? (value === '' ? '' : parseFloat(value)) : value
-    }));
-    
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: validateField(name, value)
-      }));
-    }
   };
 
   const handleSubmit = async (e) => {
