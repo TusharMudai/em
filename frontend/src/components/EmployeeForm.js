@@ -13,7 +13,7 @@ const EmployeeForm = ({ fetchEmployees, onSuccess }) => {
     joiningDate: formatDateForInput(new Date()),
   });
 
-  const [errors, setErrors] = useState({});
+  const [setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
 
 
