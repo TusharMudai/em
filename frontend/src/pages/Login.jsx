@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
-import axiosInstance from '../axiosConfig';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
   const [formData, setFormData] = useState({ 
@@ -10,82 +9,99 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
+    setError('');
 
     try {
-      const response = await axiosInstance.post('/api/auth/login', formData);
+      const response = await axios.post(
+        '/auth/login',  // Using proxy instead of full URL
+        formData,
+        { 
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
       
-      // Validate response structure
-      if (!response.data?.token || !response.data?.user) {
-        throw new Error('Invalid server response');
+      // Store token and user data
+      localStorage.setItem('token', response.data.token);
+      if (response.data.user) {
+        localStorage.setItem('user', JSON.stringify(response.data.user));
       }
-
-      login(response.data);
-      navigate('/tasks');
-    } catch (error) {
+      
+      navigate('/'); // Redirect to home page
+    } catch (err) {
       setError(
-        error.response?.data?.message || 
-        error.message || 
+        err.response?.data?.message || 
+        err.message || 
         'Login failed. Please try again.'
       );
+      console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20">
-      <form onSubmit={handleSubmit} className="bg-white p-6 shadow-md rounded">
-        <h1 className="text-2xl font-bold mb-4 text-center">Login</h1>
-        
-        {error && (
-          <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
-            {error}
-          </div>
-        )}
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
+      
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+          {error}
+        </div>
+      )}
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="w-full mb-4 p-2 border rounded"
-          required
-          autoComplete="username"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          className="w-full mb-4 p-2 border rounded"
-          required
-          autoComplete="current-password"
-          minLength={6}
-        />
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="your@email.com"
+            required
+            autoComplete="email"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={formData.password}
+            onChange={(e) => setFormData({...formData, password: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="••••••••"
+            required
+            autoComplete="current-password"
+          />
+        </div>
+
         <button 
           type="submit" 
-          className={`w-full ${isLoading ? 'bg-blue-400' : 'bg-blue-600'} text-white p-2 rounded`}
           disabled={isLoading}
+          className={`w-full py-2 px-4 rounded-md text-white font-medium ${
+            isLoading 
+              ? 'bg-blue-400 cursor-not-allowed' 
+              : 'bg-blue-600 hover:bg-blue-700'
+          } transition-colors`}
         >
           {isLoading ? 'Logging in...' : 'Login'}
         </button>
       </form>
-
-      <div className="text-center mt-4">
-        <p>
-          Don't have an account?{' '}
-          <Link to="/register" className="text-blue-600 hover:underline">
-            Sign Up
-          </Link>
-        </p>
-      </div>
     </div>
   );
 };

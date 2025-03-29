@@ -1,4 +1,4 @@
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -10,19 +10,20 @@ const app = express();
 // ======================
 // Mongoose Configuration
 // ======================
-mongoose.set('strictQuery', true); // Suppress strictQuery warning
+mongoose.set('strictQuery', true);
 
 // ======================
 // Middleware Setup
 // ======================
 app.use(cors({
-  origin: '*' // Allow all origins (update this for production security)
+  origin: 'http://localhost:3000',
+  credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ==============
-// Routes
+// Health Check
 // ==============
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -32,8 +33,11 @@ app.get('/', (req, res) => {
   });
 });
 
+// ==============
 // API Routes
-app.use('/api/auth', require('./routes/authRoutes'));
+// ==============
+// Auth routes - now at root level
+app.use('/auth', require('./routes/authRoutes')); // Changed from /api/auth
 app.use('/api/employees', require('./routes/employeeRoutes'));
 
 // ======================
@@ -55,39 +59,21 @@ app.use((err, req, res, next) => {
 });
 
 // ======================
-// MongoDB Connection & Server Initialization
+// Server Initialization
 // ======================
 const startServer = async () => {
   try {
-    // Load environment variables
-    const mongoURI = process.env.MONGO_URI; // MongoDB Atlas URI from secrets
-    const jwtSecret = process.env.JWT_SECRET; // JWT secret from secrets
-    const PORT = process.env.PORT || 5001; // Port from secrets or default to 5001
+    const { MONGO_URI, JWT_SECRET, PORT = 5001 } = process.env;
 
-    // Validate required environment variables
-    if (!mongoURI || !jwtSecret) {
-      throw new Error('Missing required environment variables: MONGO_URI or JWT_SECRET');
+    if (!MONGO_URI || !JWT_SECRET) {
+      throw new Error('Missing required environment variables');
     }
 
-    // Connect to MongoDB Atlas
-    await connectDB(mongoURI);
+    await connectDB(MONGO_URI);
     console.log('✅ MongoDB connected successfully');
 
-    // Start Express server
-    const server = app.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Server running on:`);
-      console.log(`   Local: http://localhost:${PORT}`);
-      console.log(`   Network: http://${getIpAddress()}:${PORT}`);
-    });
-
-    // Handle server errors
-    server.on('error', (error) => {
-      if (error.code === 'EADDRINUSE') {
-        console.error(`❌ Port ${PORT} is already in use`);
-      } else {
-        console.error('❌ Server error:', error);
-      }
-      process.exit(1);
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
 
   } catch (error) {
@@ -96,20 +82,6 @@ const startServer = async () => {
   }
 };
 
-// Helper function to get IP address
-const getIpAddress = () => {
-  const interfaces = require('os').networkInterfaces();
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name]) {
-      if (iface.family === 'IPv4' && !iface.internal) {
-        return iface.address;
-      }
-    }
-  }
-  return '0.0.0.0';
-};
-
-// Start the server only when not in test mode
 if (require.main === module) {
   startServer();
 }
