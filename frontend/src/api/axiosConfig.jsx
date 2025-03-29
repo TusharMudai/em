@@ -1,7 +1,8 @@
+// src/api/axios.js
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://13.236.2.114',
+  baseURL: 'http://13.236.2.114:5000/api', // Added port 5000 and /api endpoint
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
