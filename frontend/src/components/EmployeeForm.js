@@ -78,10 +78,6 @@ const EmployeeForm = ({ fetchEmployees, onSuccess }) => {
     setSuccessMessage('');
 
     try {
-      const response = await axiosInstance.post('/employees', {
-        ...formData,
-        salary: parseFloat(formData.salary)
-      });
 
       // Success handling
       setSuccessMessage('Employee added successfully!');
